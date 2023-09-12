@@ -30,28 +30,18 @@ void wrapper_releasebuffer(PyObject* self, Py_buffer* view) {
     view->obj = self; // set it back to self, PyBuffer_Release will handle the decrement
 }
 
-static PyObject * expose_buffer(PyObject * self, PyObject * args) {
-    printf("entered exposing buffer!\n");
-
-    PyBufferProcs buffer_procs = {
+PyBufferProcs buffer_procs = {
         wrapper_getbuffer,
         wrapper_releasebuffer,
     };
 
-    PyObject* wrapper; 
+static PyObject * expose_buffer(PyObject* cls, PyObject* args) {
+    printf("entered exposing buffer!\n");
 
-    if (!PyArg_ParseTuple(args, "O", &wrapper)) {
-        printf("is NULL!\n");
-        return NULL;
-    }
-
-    PyTypeObject* type =  Py_TYPE(wrapper);
+    PyTypeObject* type = (PyTypeObject*) cls;
 
     type->tp_as_buffer = &buffer_procs;
-
     PyType_Modified(type);
-    Py_DECREF(type);
-    Py_DECREF(wrapper);
     printf("done!\n");
 
     // in place modification so per python convention return None.
