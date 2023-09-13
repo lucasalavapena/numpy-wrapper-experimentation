@@ -4,6 +4,8 @@ int wrapper_getbuffer(PyObject* self, Py_buffer* view, int flags) {
     PyObject* data = PyObject_GetAttrString(self, "_data");
 
     if (data == NULL) {
+        // To offset the reference from PyObject_GetAttrString
+        Py_DECREF(data); 
         return 0;
     }
 
@@ -22,6 +24,8 @@ int wrapper_getbuffer(PyObject* self, Py_buffer* view, int flags) {
 void wrapper_releasebuffer(PyObject* self, Py_buffer* view) {
     PyObject* data = PyObject_GetAttrString(self, "_data");
     if (data == NULL) {
+        // To offset the reference from PyObject_GetAttrString
+        Py_DECREF(data); 
         return;
     }
     view->obj = data;
